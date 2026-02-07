@@ -17,6 +17,12 @@ A structured, weekend-friendly roadmap to build a Spring Boot (Java 21) backend 
 - `ROADMAP.md` — milestones and progress checklist.
 - `docs/master-scaffold-prompt.md` — copy/paste prompt to scaffold the full project (groupId `ph.francisco`).
 
+## Branches
+- `main` — learner version (specs, docs, no solutions).
+- `solutions-week1` — solution drop for weekend 1 (empty placeholder now).
+- `solutions-week2` — solution drop for weekend 2 (empty placeholder now).
+- `solutions-stretch` — solution drop for stretch items (empty placeholder now).
+
 ## Quick start (macOS)
 1) Install tools
    - Homebrew
