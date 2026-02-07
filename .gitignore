@@ -1,0 +1,37 @@
+# Maven / Gradle
+/target/
+/build/
+*.log
+
+# IDEs
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+.vscode/
+
+# OS
+.DS_Store
+
+# Env / secrets
+.env
+*.env
+
+# Jars
+*.jar
+*.war
+*.ear
+
+# Testcontainers / Docker
+**/.testcontainers.env
+
+# Coverage / reports
+/coverage/
+/.scannerwork/
+
+# Node (if any)
+node_modules/
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
