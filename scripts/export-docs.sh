@@ -39,6 +39,19 @@ INSTR_FILES=(
   "project-setup.md"
 )
 
+# Ordered full bundle: intro -> instructions -> weekends
+FULL_ORDER=(
+  "architecture.md"          # intro / overview
+  "environment.md"           # env vars
+  "project-setup.md"         # how to generate project
+  "macos-setup.md"           # platform setup
+  "learning-path.md"         # high-level plan
+  "weekend-0-prep.md"        # prep
+  "weekend-1-core.md"        # core app
+  "weekend-2-triage.md"      # triage & polish
+  "stretch-weekend.md"       # optional stretch
+)
+
 for file in "${DOC_FILES[@]}"; do
   input="$DOCS_DIR/$file"
   base="$(basename "$file" .md)"
@@ -69,6 +82,18 @@ if (( ${#instr_inputs[@]} )); then
   instr_out="$OUT_DIR/ticket-triage-instructions.pdf"
   echo "Rendering instructions bundle -> $instr_out"
   pandoc "${instr_inputs[@]}" -o "$instr_out"
+fi
+
+# Full ordered bundle
+full_inputs=()
+for file in "${FULL_ORDER[@]}"; do
+  input="$DOCS_DIR/$file"
+  [[ -f "$input" ]] && full_inputs+=("$input")
+done
+if (( ${#full_inputs[@]} )); then
+  full_out="$OUT_DIR/ticket-triage-full.pdf"
+  echo "Rendering full bundle -> $full_out"
+  pandoc "${full_inputs[@]}" -o "$full_out"
 fi
 
 echo "Done. PDFs in $OUT_DIR"
