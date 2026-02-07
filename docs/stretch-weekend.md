@@ -1,4 +1,4 @@
-# Stretch Weekend — Extras
+# [stretch] Stretch Weekend — Extras
 
 ## Goals
 - Explore similarity search, platform hardening, and delivery.

@@ -12,7 +12,7 @@ A structured, weekend-friendly roadmap to build a Spring Boot (Java 21) backend 
 - `docs/macos-setup.md` — SDKMAN/nvm/Docker/Colima setup.
 - `docs/environment.md` — required environment variables and sample .env.
 - `docs/project-setup.md` — generating the Spring Boot project via CLI, VS Code, or IntelliJ.
-- `docs/index.md` — doc entry point.
+- `docs/index.md` — doc entry point with tag legend.
 - `scripts/export-docs.sh` — render PDFs via pandoc (PDFs are git-ignored). Outputs are minimized to: architecture-only PDF, learner guide bundle, stretch guide bundle; any other markdowns in `docs/` are rendered individually.
 
 ## Quick start (macOS)
@@ -40,6 +40,7 @@ A structured, weekend-friendly roadmap to build a Spring Boot (Java 21) backend 
 - Use docker compose first for local runs; k8s and cloud deployment are optional stretch goals.
 - Enable pgvector when ready for similarity; keep fallback path available for non-vector setups.
 - Pick an AI adapter per environment: stub for tests/demos, OpenAI for hosted, or local HTTP LLM (Ollama/vLLM) for offline use.
+- Follow tags in headings: `[week0]` prep, `[week1]` core, `[week2]` triage, `[stretch]` extras; capability tags like `ai-local`, `pgvector`, `compose`, `k8s`, `ci` indicate scope.
 - Keep the domain layer free of Spring, keep controllers thin, and add tests alongside features.
 - When blocked on tooling or infra for more than ~30–60 minutes, capture notes and defer or ask for help.
 

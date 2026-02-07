@@ -1,4 +1,4 @@
-# Weekend 2 — Triage & Polish
+# [week2] Weekend 2 — Triage & Polish
 
 ## Goals
 - Add AI triage flow and persist triage results.

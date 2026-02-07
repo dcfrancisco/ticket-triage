@@ -12,3 +12,11 @@
 
 ## Export
 - Use `scripts/export-docs.sh` to render PDFs (requires pandoc installed locally).
+
+## Tag Legend
+- `[week0]` Prep
+- `[week1]` Core app
+- `[week2]` Triage & polish
+- `[stretch]` Optional extras
+- Capability tags: `db`, `api`, `ai-stub`, `ai-openai`, `ai-local`, `pgvector`, `compose`, `k8s`, `ci`
+- Priority tags: `must-have`, `stretch`, `nice-to-have`

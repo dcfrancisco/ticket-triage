@@ -1,4 +1,4 @@
-# Weekend 1 — Core App
+# [week1] Weekend 1 — Core App
 
 ## Goals
 - Scaffold the project with clean layers.

@@ -1,4 +1,4 @@
-# Weekend 0 — Prep (macOS)
+# [week0] Weekend 0 — Prep (macOS)
 
 ## Goals
 - Have tooling, container runtime, and database ready.
