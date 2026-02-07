@@ -11,60 +11,29 @@ OUT_DIR="$ROOT_DIR/build/pdfs"
 
 mkdir -p "$OUT_DIR"
 
-# List of markdown files to render individually
-DOC_FILES=(
-  "architecture.md"
-  "learning-path.md"
-  "macos-setup.md"
-  "index.md"
-  "weekend-0-prep.md"
-  "weekend-1-core.md"
-  "weekend-2-triage.md"
-  "stretch-weekend.md"
-  "environment.md"
-  "project-setup.md"
-)
-
-# Groups for combined PDFs
+# Grouped outputs only (minimize PDF count)
 ARCH_FILE="architecture.md"
-INSTR_FILES=(
-  "learning-path.md"
+LEARNER_GUIDE=(
+  "environment.md"
+  "project-setup.md"
   "macos-setup.md"
-  "index.md"
+  "learning-path.md"
   "weekend-0-prep.md"
   "weekend-1-core.md"
   "weekend-2-triage.md"
+)
+STRETCH_GUIDE=(
   "stretch-weekend.md"
-  "environment.md"
-  "project-setup.md"
 )
 
-# Ordered full bundle: intro -> instructions -> weekends
-FULL_ORDER=(
-  "architecture.md"          # intro / overview
-  "environment.md"           # env vars
-  "project-setup.md"         # how to generate project
-  "macos-setup.md"           # platform setup
-  "learning-path.md"         # high-level plan
-  "weekend-0-prep.md"        # prep
-  "weekend-1-core.md"        # core app
-  "weekend-2-triage.md"      # triage & polish
-  "stretch-weekend.md"       # optional stretch
-)
+contains() {
+  local seek="$1"; shift
+  for item in "$@"; do
+    [[ "$item" == "$seek" ]] && return 0
+  done
+  return 1
+}
 
-for file in "${DOC_FILES[@]}"; do
-  input="$DOCS_DIR/$file"
-  base="$(basename "$file" .md)"
-  output="$OUT_DIR/${base}.pdf"
-  if [[ ! -f "$input" ]]; then
-    echo "Skipping missing file: $input" >&2
-    continue
-  fi
-  echo "Rendering $input -> $output"
-  pandoc "$input" -o "$output"
-done
-
-# Architecture-only PDF
 arch_input="$DOCS_DIR/$ARCH_FILE"
 if [[ -f "$arch_input" ]]; then
   arch_out="$OUT_DIR/architecture.pdf"
@@ -72,28 +41,41 @@ if [[ -f "$arch_input" ]]; then
   pandoc "$arch_input" -o "$arch_out"
 fi
 
-# Instructions bundle PDF
-instr_inputs=()
-for file in "${INSTR_FILES[@]}"; do
+# Learner guide bundle
+learner_inputs=()
+for file in "${LEARNER_GUIDE[@]}"; do
   input="$DOCS_DIR/$file"
-  [[ -f "$input" ]] && instr_inputs+=("$input")
+  [[ -f "$input" ]] && learner_inputs+=("$input")
 done
-if (( ${#instr_inputs[@]} )); then
-  instr_out="$OUT_DIR/ticket-triage-instructions.pdf"
-  echo "Rendering instructions bundle -> $instr_out"
-  pandoc "${instr_inputs[@]}" -o "$instr_out"
+if (( ${#learner_inputs[@]} )); then
+  instr_out="$OUT_DIR/ticket-triage-learner-guide.pdf"
+  echo "Rendering learner guide bundle -> $instr_out"
+  pandoc "${learner_inputs[@]}" -o "$instr_out"
 fi
 
-# Full ordered bundle
-full_inputs=()
-for file in "${FULL_ORDER[@]}"; do
+# Stretch guide bundle
+stretch_inputs=()
+for file in "${STRETCH_GUIDE[@]}"; do
   input="$DOCS_DIR/$file"
-  [[ -f "$input" ]] && full_inputs+=("$input")
+  [[ -f "$input" ]] && stretch_inputs+=("$input")
 done
-if (( ${#full_inputs[@]} )); then
-  full_out="$OUT_DIR/ticket-triage-full.pdf"
-  echo "Rendering full bundle -> $full_out"
-  pandoc "${full_inputs[@]}" -o "$full_out"
+if (( ${#stretch_inputs[@]} )); then
+  stretch_out="$OUT_DIR/ticket-triage-stretch.pdf"
+  echo "Rendering stretch guide -> $stretch_out"
+  pandoc "${stretch_inputs[@]}" -o "$stretch_out"
 fi
+
+# Any additional markdowns not in bundles are rendered individually
+bundle_files=("$ARCH_FILE" "${LEARNER_GUIDE[@]}" "${STRETCH_GUIDE[@]}")
+for path in "$DOCS_DIR"/*.md; do
+  [[ -f "$path" ]] || continue
+  name="$(basename "$path")"
+  if contains "$name" "${bundle_files[@]}"; then
+    continue
+  fi
+  out="$OUT_DIR/$(basename "$name" .md).pdf"
+  echo "Rendering extra doc $path -> $out"
+  pandoc "$path" -o "$out"
+done
 
 echo "Done. PDFs in $OUT_DIR"

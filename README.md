@@ -13,7 +13,7 @@ A structured, weekend-friendly roadmap to build a Spring Boot (Java 21) backend 
 - `docs/environment.md` — required environment variables and sample .env.
 - `docs/project-setup.md` — generating the Spring Boot project via CLI, VS Code, or IntelliJ.
 - `docs/index.md` — doc entry point.
-- `scripts/export-docs.sh` — render PDFs via pandoc (PDFs are git-ignored).
+- `scripts/export-docs.sh` — render PDFs via pandoc (PDFs are git-ignored). Outputs are minimized to: architecture-only PDF, learner guide bundle, stretch guide bundle; any other markdowns in `docs/` are rendered individually.
 
 ## Quick start (macOS)
 1) Install tools
