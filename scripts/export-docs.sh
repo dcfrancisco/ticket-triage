@@ -21,6 +21,7 @@ LEARNER_GUIDE=(
   "weekend-0-prep.md"
   "weekend-1-core.md"
   "weekend-2-triage.md"
+  "master-scaffold-prompt.md"
 )
 STRETCH_GUIDE=(
   "stretch-weekend.md"

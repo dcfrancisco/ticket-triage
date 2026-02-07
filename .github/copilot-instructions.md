@@ -17,6 +17,8 @@ You are assisting in building a small but production-flavored Spring Boot servic
 - AI client via Spring AI or a thin HTTP wrapper; support stub, OpenAI, and local HTTP LLMs (e.g., Ollama/vLLM) behind config.
 - JUnit 5 + Spring Boot Test + Testcontainers (Postgres)
 
+Guidance: prefer records for DTOs when possible; use UUIDs generated in the app (no DB default generation).
+
 ## Dev Environment
 
 - Prefer SDKMAN for managing Java 21; nvm for Node tooling if needed.
@@ -27,6 +29,7 @@ You are assisting in building a small but production-flavored Spring Boot servic
 - Domain is pure Java, no Spring annotations in domain.
 - Controllers only map HTTP <-> DTOs. No business logic in controllers.
 - Application services orchestrate: create ticket, triage ticket, search tickets.
+- Domain owns status transition rules; Application enforces orchestration and flags (e.g., allow rollback/force retriage).
 - Infrastructure contains:
   - JPA entities + repositories
   - External AI client implementation (stub, OpenAI, local HTTP LLM)
@@ -50,13 +53,14 @@ You are assisting in building a small but production-flavored Spring Boot servic
   - confidence (0..1)
   - suggestedResponse (string, optional)
 - If AI fails, return a safe fallback (category OTHER, priority P3, confidence 0.0)
+- Triage can be rerun only with an explicit `force` flag; otherwise it is idempotent.
 
 ## Non-Functional Requirements
 
-- Input validation with clear error messages (problem+json or consistent error format)
-- Idempotency: triage endpoint should not create duplicates; store triage result per ticket
-- Observability: structured logs; do not log secrets or full ticket text in production mode
-- Config via application.yml; all secrets via env vars
+- Input validation with clear error messages; use a consistent problem+json shape with `type`, `title`, `status`, `detail`, `instance`, and `errors[]` for validation.
+- Idempotency: triage endpoint should not create duplicates; allow explicit retriage via `force` flag.
+- Observability: structured logs; do not log secrets or full ticket text in production mode.
+- Config via application.yml; all secrets via env vars.
 
 ## Data Model (minimum)
 
@@ -73,8 +77,9 @@ You are assisting in building a small but production-flavored Spring Boot servic
   - category
   - priority
   - confidence
-  - model
-  - createdAt
+  - provider (stub/openai/local) and model
+  - createdAt, updatedAt
+  - optional triage_version or force overwrite when `force` flag is used
 - optional embeddings:
   - ticket_id (uuid)
   - embedding vector OR a text fingerprint fallback

@@ -15,6 +15,7 @@ A structured, weekend-friendly roadmap to build a Spring Boot (Java 21) backend 
 - `docs/index.md` — doc entry point with tag legend.
 - `scripts/export-docs.sh` — render PDFs via pandoc (PDFs are git-ignored). Outputs are minimized to: architecture-only PDF, learner guide bundle, stretch guide bundle; any other markdowns in `docs/` are rendered individually.
 - `ROADMAP.md` — milestones and progress checklist.
+- `docs/master-scaffold-prompt.md` — copy/paste prompt to scaffold the full project (groupId `ph.francisco`).
 
 ## Quick start (macOS)
 1) Install tools
