@@ -1,0 +1,29 @@
+### Create a ticket
+POST http://localhost:8080/api/tickets
+Content-Type: application/json
+Accept: application/json
+
+{
+  "subject": "Example login issue",
+  "description": "Customer cannot log in after password reset. The reset link appears to expire immediately.",
+  "customerEmail": "user@example.com"
+}
+
+### Get a ticket by id
+# Replace {{id}} with the returned UUID
+GET http://localhost:8080/api/tickets/{{id}}
+Accept: application/json
+
+### List tickets (filter by status)
+GET http://localhost:8080/api/tickets?status=NEW&page=0&size=20
+Accept: application/json
+
+### Update ticket status
+POST http://localhost:8080/api/tickets/{{id}}/status
+Content-Type: application/json
+Accept: application/json
+
+{
+  "status": "TRIAGED",
+  "allowRollback": false
+}
