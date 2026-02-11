@@ -16,14 +16,19 @@
    - Flyway V1 migration: create `tickets` table (uuid PK, subject, description, customer_email, status, created_at, updated_at).
    - JPA entity + repository for tickets.
    - Testcontainers integration test: repository save/find round-trip (Docker/Colima must be running before tests).
+   - Provide a local Postgres setup (docker compose service is fine) with defaults: db/user/password `tickettriage`, port 5432; app config should point here by default.
 4. API layer (initial)
    - DTOs + validation: subject 5-120, description 20-4000, customerEmail email.
-   - Controllers: POST /api/tickets (create), GET /api/tickets/{id}, GET /api/tickets (with filters stub), POST /api/tickets/{id}/status (basic transition enforcement).
-   - Global exception handler returning problem+json.
+   - Controllers (document these for learners):
+     - POST /api/tickets — create a ticket, returns 201 with Location header.
+     - GET /api/tickets/{id} — fetch by id.
+     - GET /api/tickets?status=&page=&size= — list with optional status filter and pagination.
+     - POST /api/tickets/{id}/status — enforce allowed transitions; include an `allowRollback` flag for TRIAGED <- IN_PROGRESS.
+   - Global exception handler returning problem+json for validation/conflict/not-found.
 5. Observability & docs
    - Enable OpenAPI/Swagger UI.
    - Add basic request logging filter (no secrets, no full descriptions in prod mode).
-   - Create `docs/examples.http` with sample create/get/status requests.
+   - Create `docs/examples.http` with sample create/get/status requests for the endpoints above.
 6. Containerization (compose-first)
    - Write Dockerfile.
    - Create docker compose file to run app + Postgres (reuse local env vars); verify `docker compose up` works.
