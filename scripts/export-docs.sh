@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Export docs in docs/ to PDF using pandoc.
+# Export project docs to PDF using pandoc.
 # Requirements: pandoc installed locally (brew install pandoc), pdflatex or wkhtmltopdf for PDF engine.
 # Usage: scripts/export-docs.sh
 
@@ -12,19 +12,42 @@ OUT_DIR="$ROOT_DIR/build/pdfs"
 mkdir -p "$OUT_DIR"
 
 # Grouped outputs only (minimize PDF count)
-ARCH_FILE="architecture.md"
-LEARNER_GUIDE=(
-  "environment.md"
-  "project-setup.md"
-  "macos-setup.md"
-  "learning-path.md"
-  "weekend-0-prep.md"
-  "weekend-1-core.md"
-  "weekend-2-triage.md"
-  "master-scaffold-prompt.md"
+ROOT_GUIDE=(
+  "$ROOT_DIR/README.md"
+  "$ROOT_DIR/QUICKSTART.md"
+  "$ROOT_DIR/INSTALLATION.md"
+  "$ROOT_DIR/WEEK1_GUIDE.md"
+  "$ROOT_DIR/WEEK2_GUIDE.md"
+  "$ROOT_DIR/WEEK3_GUIDE.md"
+  "$ROOT_DIR/SOLUTION_BRANCHES.md"
+  "$ROOT_DIR/DEMO_SCRIPT.md"
+  "$ROOT_DIR/TROUBLESHOOTING.md"
+  "$ROOT_DIR/FAQ.md"
 )
-STRETCH_GUIDE=(
-  "stretch-weekend.md"
+ARCHITECTURE_GUIDE=(
+  "$DOCS_DIR/architecture.md"
+  "$DOCS_DIR/SEQUENCE_DIAGRAMS.md"
+  "$DOCS_DIR/DATA_MODEL.md"
+  "$DOCS_DIR/API_REFERENCE.md"
+)
+AI_GUIDE=(
+  "$DOCS_DIR/AI_ARCHITECTURE.md"
+  "$DOCS_DIR/PROMPTS.md"
+  "$DOCS_DIR/MODEL_PROVIDERS.md"
+  "$DOCS_DIR/KNOWLEDGE_BASE.md"
+  "$DOCS_DIR/ADDING_DOCUMENTS.md"
+)
+LEGACY_GUIDE=(
+  "$DOCS_DIR/environment.md"
+  "$DOCS_DIR/project-setup.md"
+  "$DOCS_DIR/macos-setup.md"
+  "$DOCS_DIR/learning-path.md"
+  "$DOCS_DIR/weekend-0-prep.md"
+  "$DOCS_DIR/weekend-1-core.md"
+  "$DOCS_DIR/weekend-2-triage.md"
+  "$DOCS_DIR/stretch-weekend.md"
+  "$DOCS_DIR/master-scaffold-prompt.md"
+  "$DOCS_DIR/index.md"
 )
 
 contains() {
@@ -35,48 +58,43 @@ contains() {
   return 1
 }
 
-arch_input="$DOCS_DIR/$ARCH_FILE"
-if [[ -f "$arch_input" ]]; then
-  arch_out="$OUT_DIR/architecture.pdf"
-  echo "Rendering $arch_input -> $arch_out"
-  pandoc "$arch_input" -o "$arch_out"
-fi
+render_bundle() {
+  local out_name="$1"; shift
+  local inputs=()
+  local input
+  for input in "$@"; do
+    [[ -f "$input" ]] && inputs+=("$input")
+  done
 
-# Learner guide bundle
-learner_inputs=()
-for file in "${LEARNER_GUIDE[@]}"; do
-  input="$DOCS_DIR/$file"
-  [[ -f "$input" ]] && learner_inputs+=("$input")
-done
-if (( ${#learner_inputs[@]} )); then
-  instr_out="$OUT_DIR/ticket-triage-learner-guide.pdf"
-  echo "Rendering learner guide bundle -> $instr_out"
-  pandoc "${learner_inputs[@]}" -o "$instr_out"
-fi
-
-# Stretch guide bundle
-stretch_inputs=()
-for file in "${STRETCH_GUIDE[@]}"; do
-  input="$DOCS_DIR/$file"
-  [[ -f "$input" ]] && stretch_inputs+=("$input")
-done
-if (( ${#stretch_inputs[@]} )); then
-  stretch_out="$OUT_DIR/ticket-triage-stretch.pdf"
-  echo "Rendering stretch guide -> $stretch_out"
-  pandoc "${stretch_inputs[@]}" -o "$stretch_out"
-fi
-
-# Any additional markdowns not in bundles are rendered individually
-bundle_files=("$ARCH_FILE" "${LEARNER_GUIDE[@]}" "${STRETCH_GUIDE[@]}")
-for path in "$DOCS_DIR"/*.md; do
-  [[ -f "$path" ]] || continue
-  name="$(basename "$path")"
-  if contains "$name" "${bundle_files[@]}"; then
-    continue
+  if (( ${#inputs[@]} )); then
+    local out="$OUT_DIR/$out_name"
+    echo "Rendering bundle -> $out"
+    pandoc "${inputs[@]}" -o "$out"
   fi
-  out="$OUT_DIR/$(basename "$name" .md).pdf"
-  echo "Rendering extra doc $path -> $out"
-  pandoc "$path" -o "$out"
+}
+
+render_bundle "ticket-triage-product-guide.pdf" "${ROOT_GUIDE[@]}"
+render_bundle "ticket-triage-architecture-guide.pdf" "${ARCHITECTURE_GUIDE[@]}"
+render_bundle "ticket-triage-ai-guide.pdf" "${AI_GUIDE[@]}"
+render_bundle "ticket-triage-legacy-guide.pdf" "${LEGACY_GUIDE[@]}"
+
+# Any additional markdowns not in bundles are rendered individually.
+bundle_files=(
+  "${ROOT_GUIDE[@]}"
+  "${ARCHITECTURE_GUIDE[@]}"
+  "${AI_GUIDE[@]}"
+  "${LEGACY_GUIDE[@]}"
+)
+for dir in "$ROOT_DIR" "$DOCS_DIR"; do
+  for path in "$dir"/*.md; do
+    [[ -f "$path" ]] || continue
+    if contains "$path" "${bundle_files[@]}"; then
+      continue
+    fi
+    out="$OUT_DIR/$(basename "$path" .md).pdf"
+    echo "Rendering extra doc $path -> $out"
+    pandoc "$path" -o "$out"
+  done
 done
 
 echo "Done. PDFs in $OUT_DIR"
